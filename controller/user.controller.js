@@ -1,6 +1,9 @@
 const User = require("../model/user.model");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
+const otpGenerator = require('otp-generator');
+const { otpMailSender } = require('../helpers/otpMailSender');
+
 
 exports.userSighup = async (req, res) => {
     try {
@@ -12,8 +15,7 @@ exports.userSighup = async (req, res) => {
             return res.json({ message: 'User Password And Confirm Password Are Not Match.' });
         }
         let hashPassword = await bcrypt.hash(req.body.password, 10);
-        let hashconfirmPassword = await bcrypt.hash(req.body.confirmPassword, 10);
-        user = await User.create({ ...req.body, password: hashPassword, confirmPassword: hashconfirmPassword });
+        user = await User.create({ ...req.body, password: hashPassword });
         res.status(201).json({ message: "SighUp SuccessFully Done.", user });
     } catch (err) {
         console.log(err);
@@ -33,21 +35,11 @@ exports.userLogin = async (req, res) => {
         }
         let token = await jwt.sign({ userId: user._id }, process.env.JWT_SECRET)
         res.status(200).json({ message: "Login SuccessFully Done.", token });
-        // res.cookie("jwt", `Bearer ${token}`)
     } catch (err) {
         console.log(err);
         res.status(500).json({ message: 'Internal Server Error' });
     }
 };
-
-// exports.userLogout = async (req, res) => {
-//     try {
-//         // res.clearCookie('jwt');
-//     } catch (err) {
-//         console.log(err);
-//         res.status(500).json({ message: "Internal Server Error" })
-//     }
-// };
 
 exports.getUserProfile = async (req, res) => {
     try {
@@ -103,3 +95,25 @@ exports.userPasswordChange = async (req, res) => {
     }
 };
 
+exports.userForgotPasword = async (req, res) => {
+    try {
+        let user = await User.findOne({ email: req.body.email, isDelete: false });
+        if (!user) {
+            return res.json({ message: 'User Not Found....' });
+        }
+        // console.log(user);
+        
+        let otp = otpGenerator.generate(4, { lowerCaseAlphabets: false, upperCaseAlphabets: false, specialChars: false });
+        const mailOptions = {
+            from: process.env.EMAIL_USER_NAME,
+            to: user.email,
+            subject: 'Forgot Password Email',
+            text: `Your Forgot password otp is ${otp} valid only 5 minutes.`
+        };
+        await otpMailSender(mailOptions);
+        res.send('Otp Send SuccessFully To Your Email.');
+    } catch (err) {
+        console.log(err);
+        res.status(500).json({ message: 'Internal Server Error' });
+    }
+}

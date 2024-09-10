@@ -7,6 +7,9 @@ const mongoose = require("mongoose");
 
 
 const userRoutes = require("./routes/user.routes");
+const productRoutes = require("./routes/product.routes");
+const cartRoutes = require("./routes/cart.routes");
+const orderRoutes = require("./routes/order.routes");
 
 
 server.use(morgan("dev"));
@@ -20,8 +23,9 @@ server.get("/", (req, res) => {
 
 
 server.use("/api/user", userRoutes);
-
-
+server.use("/api/product", productRoutes);
+server.use("/api/cart", cartRoutes);
+server.use("/api/order", orderRoutes);
 
 
 
