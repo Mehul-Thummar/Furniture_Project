@@ -3,7 +3,7 @@ const Product = require('../model/product.model');
 
 
 class ProductServices {
-    async getAllProduct(query) {
+    async getProduct(query) {
         try {
             //  Pagination
             let pageNo = Number(query.pageNo) || 1;
@@ -19,25 +19,27 @@ class ProductServices {
                 sortCondition[query.sortBy] = query.sortOrder === "desc" ? -1 : 1;
             }
 
-            // // Searching
-            // let product = query.productId ? [
-            //     {
-            //         $match: { productId: mongoose.Types.ObjectId(query.productId) }
-            //     }
-            // ] : []
+            // Get Product By Id 
+            let product = query.productId ? [
+                {
+                    $match: { _id: new mongoose.Types.ObjectId(query.productId) }
+                }
+            ] : []
             let find = [
                 {
                     $match: { isDelete: false }
                 },
+                ...product
             ]
+            console.log(find);
             let count = await Product.aggregate(find);
             let result = await Product.aggregate([...find,
-                {
-                    $skip: skip,
-                },
-                {
-                    $limit: perPage,
-                },]
+            {
+                $skip: skip,
+            },
+            {
+                $limit: perPage,
+            },]
             );
             let totalPage = Math.ceil(count.length / perPage);
             return {

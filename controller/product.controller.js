@@ -18,9 +18,9 @@ exports.addNewProduct = async (req, res) => {
     }
 };
 
-exports.getAllProduct = async (req, res) => {
+exports.getProduct = async (req, res) => {
     try {
-        let products = await ProductServices.getAllProduct({ isDelete: false });
+        let products = await ProductServices.getProduct(req.query);
         res.status(200).json(products);
     } catch (err) {
         console.log(err);
@@ -28,18 +28,6 @@ exports.getAllProduct = async (req, res) => {
     }
 };
 
-exports.getProduct = async (req, res) => {
-    try {
-        let product = await ProductServices.findOneProduct({ _id: req.query.productId });
-        if (!product) {
-            return res.status(404).json({ message: "Product Not Founded" });
-        }
-        res.status(200).json(product);
-    } catch (err) {
-        console.log(err);
-        res.status(500).json({ message: "Internal Server Error" })
-    }
-};
 
 exports.updateProduct = async (req, res) => {
     try {
