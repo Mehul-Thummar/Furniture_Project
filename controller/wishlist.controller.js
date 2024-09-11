@@ -4,7 +4,7 @@ const WishlistServices = require("../services/wishlist.service");
 
 exports.addtoWishlist = async (req, res) => {
     try {
-        let wishlist = await Wishlist.findOne({
+        let wishlist = await WishlistServices.findOneWishlist({
             user: req.user._id,
             productId: req.body.productId,
             isDelete: false,
@@ -25,7 +25,7 @@ exports.addtoWishlist = async (req, res) => {
 
 exports.getAllWishlists = async (req, res) => {
     try {
-        let wishlists = await Wishlist.find({ user: req.user._id, isDelete: false });
+        let wishlists = await WishlistServices.findAllWishlist({ user: req.user._id, isDelete: false });
         res.json(wishlists);
     } catch (err) {
         console.log(err);

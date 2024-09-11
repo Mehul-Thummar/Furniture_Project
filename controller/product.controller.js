@@ -20,7 +20,6 @@ exports.addNewProduct = async (req, res) => {
 
 exports.getAllProduct = async (req, res) => {
     try {
-        // let products = await Product.find({ isDelete: false });
         let products = await ProductServices.getAllProduct({ isDelete: false });
         res.status(200).json(products);
     } catch (err) {

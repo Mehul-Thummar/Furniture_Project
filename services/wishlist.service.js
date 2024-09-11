@@ -52,6 +52,7 @@ class WishlistServices {
             return err;
         }
     };
+    
     async createWishlist(body) {
         try {
             return await Wishlist.create(body);

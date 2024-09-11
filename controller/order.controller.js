@@ -5,7 +5,7 @@ const OrderServices = require("../services/order.service");
 
 exports.addNewOrder = async (req, res) => {
     try {
-        let carts = await Cart.find({
+        let carts = await OrderServices.findAllOrder({
             user: req.user._id,
             isDelete: false,
         }).populate({ path: 'productId' });
@@ -38,7 +38,7 @@ exports.addNewOrder = async (req, res) => {
 
 exports.getAllOrder = async (req, res) => {
     try {
-        let order = await Order.find({ user: req.user._id, isDelete: false });
+        let order = await OrderServices.findAllOrder({ user: req.user._id, isDelete: false });
         res.json(order);
 
     } catch (err) {
