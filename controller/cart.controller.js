@@ -1,8 +1,10 @@
 const Cart = require("../model/cart.model");
+const CartServices = require("../services/cart.service");
+
 
 exports.addtoCart = async (req, res) => {
     try {
-        let cart = await Cart.findOne({
+        let cart = await CartServices.findOneCart({
             user: req.user._id,
             productId: req.body.productId,
             isDelete: false,
@@ -12,7 +14,7 @@ exports.addtoCart = async (req, res) => {
             await cart.save();
             return res.json({ message: "Already Exist So, Quantity Added", cart });
         }
-        cart = await Cart.create({
+        cart = await CartServices.createCart({
             user: req.user._id,
             ...req.body,
         });
@@ -35,11 +37,14 @@ exports.getAllCarts = async (req, res) => {
 
 exports.updateCart = async (req, res) => {
     try {
-        let cart = await Cart.findById(req.query.cartId);
+        let cart = await CartServices.findByIdCart(req.query.cartId);
         if (!cart) {
             return res.status(404).json({ message: "Cart Not Founded" });
         }
-        cart = await Cart.findOneAndUpdate({ _id: cart._id }, req.body, { new: true });
+        cart = await CartServices.findOneAndUpdateCart(
+            { _id: cart._id },
+            req.body,
+            { new: true });
         res.status(202).json({ message: "Cart Updated SuccessFully", cart });
     } catch (err) {
         console.log(err);
@@ -49,11 +54,17 @@ exports.updateCart = async (req, res) => {
 
 exports.deleteCart = async (req, res) => {
     try {
-        let cart = await Cart.findById({ _id: req.query.cartId, isDelete: false });
+        let cart = await CartServices.findByIdCart({
+            _id: req.query.cartId,
+            isDelete: false
+        });
         if (!cart) {
             return res.status(404).json({ message: "Cart Not Founded" });
         }
-        cart = await Cart.findByIdAndUpdate(cart._id, { isDelete: true }, { new: true });
+        cart = await CartServices.findByIdAndUpdateCart(
+            cart._id,
+            { isDelete: true },
+            { new: true });
         res.status(200).json({ message: "Cart Deleted SuccessFully", cart });
     } catch (err) {
         console.log(err);

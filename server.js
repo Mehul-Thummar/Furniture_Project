@@ -5,12 +5,7 @@ const server = express();
 const dbURL = process.env.MONGO_URL;
 const mongoose = require("mongoose");
 
-
-const userRoutes = require("./routes/user.routes");
-const productRoutes = require("./routes/product.routes");
-const cartRoutes = require("./routes/cart.routes");
-const orderRoutes = require("./routes/order.routes");
-
+const indexRoutes = require("./routes/index.routes");
 
 server.use(morgan("dev"));
 server.use(express.json());
@@ -22,12 +17,7 @@ server.get("/", (req, res) => {
 });
 
 
-server.use("/api/user", userRoutes);
-server.use("/api/product", productRoutes);
-server.use("/api/cart", cartRoutes);
-server.use("/api/order", orderRoutes);
-
-
+server.use("/", indexRoutes);
 
 
 server.listen(8020, () => {

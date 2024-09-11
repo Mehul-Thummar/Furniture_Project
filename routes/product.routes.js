@@ -1,4 +1,5 @@
 const express = require("express");
+const productRoutes = express.Router();
 const {
     addNewProduct,
     getAllProduct,
@@ -7,7 +8,6 @@ const {
     deleteProduct,
 
 } = require("../controller/product.controller");
-const productRoutes = express.Router();
 
 
 productRoutes.post("/newProduct", addNewProduct);

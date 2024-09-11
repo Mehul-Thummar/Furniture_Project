@@ -3,6 +3,7 @@ const userRoutes = express.Router();
 const { verifyToken } = require('../helpers/verifyToken');
 const {
     userSighup,
+    getAllUser,
     userLogin,
     getUserProfile,
     userProfileUpdate,
@@ -12,6 +13,7 @@ const {
 } = require("../controller/user.controller");
 
 userRoutes.post("/signup", userSighup);
+userRoutes.get("/allUsers", getAllUser);
 userRoutes.post("/login", userLogin);
 userRoutes.get("/profile", verifyToken, getUserProfile);
 userRoutes.put("/profileUpdate", verifyToken, userProfileUpdate);

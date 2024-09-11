@@ -3,11 +3,15 @@ const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const otpGenerator = require('otp-generator');
 const { otpMailSender } = require('../helpers/otpMailSender');
+const UserServices = require("../services/user.service");
 
 
 exports.userSighup = async (req, res) => {
     try {
-        let user = await User.findOne({ email: req.body.email, isDelete: false });
+        let user = await UserServices.findOneUser({
+            email: req.body.email,
+            isDelete: false
+        });
         if (user) {
             return res.json({ message: 'User Already Existed....' });
         }
@@ -15,7 +19,10 @@ exports.userSighup = async (req, res) => {
             return res.json({ message: 'User Password And Confirm Password Are Not Match.' });
         }
         let hashPassword = await bcrypt.hash(req.body.password, 10);
-        user = await User.create({ ...req.body, password: hashPassword });
+        user = await UserServices.createUser({
+            ...req.body,
+            password: hashPassword
+        });
         res.status(201).json({ message: "SighUp SuccessFully Done.", user });
     } catch (err) {
         console.log(err);
@@ -25,7 +32,10 @@ exports.userSighup = async (req, res) => {
 
 exports.userLogin = async (req, res) => {
     try {
-        let user = await User.findOne({ email: req.body.email, isDelete: false });
+        let user = await UserServices.findOneUser({
+            email: req.body.email,
+            isDelete: false
+        });
         if (!user) {
             return res.json({ message: 'User Not Found....' });
         }
@@ -51,10 +61,24 @@ exports.getUserProfile = async (req, res) => {
     }
 };
 
+exports.getAllUser = async (req, res) => {
+    try {
+        let users = await UserServices.findAllUser({ isDelete: false });
+        res.status(200).json(users);
+    }
+    catch (err) {
+        console.log(err);
+        res.status(500).json({ message: 'Internal Server Error' });
+    }
+}
+
 exports.userProfileUpdate = async (req, res) => {
     try {
         let user = req.user;
-        user = await User.findByIdAndUpdate(user._id, { $set: req.body }, { new: true });
+        user = await UserServices.findByIdAndUpdateUser(
+            user._id,
+            { $set: req.body },
+            { new: true });
         res.status(202).json({ message: "User Profile Updated", user });
     }
     catch (err) {
@@ -66,7 +90,10 @@ exports.userProfileUpdate = async (req, res) => {
 exports.userDelete = async (req, res) => {
     try {
         let user = req.user;
-        user = await User.findByIdAndUpdate(user._id, { isDelete: true }, { new: true });
+        user = await UserServices.findByIdAndUpdateUser(
+            user._id,
+            { isDelete: true },
+            { new: true });
         res.status(200).json({ message: "User Profile Deleted SuccessFully" });
     } catch (err) {
         console.log(err);
@@ -87,7 +114,9 @@ exports.userPasswordChange = async (req, res) => {
             return res.json({ message: "Old-Password and New-Password Are Same, Try Different" })
         }
         let hashPassword = await bcrypt.hash(req.body.newPassword, 10);
-        user = await User.findByIdAndUpdate(user._id, { password: hashPassword }, { new: true });
+        user = await UserServices.findByIdAndUpdateUser(user._id,
+            { password: hashPassword },
+            { new: true });
         res.status(200).json({ message: "Password Change SuccessFully Done." });
     } catch (err) {
         console.log(err);
@@ -97,12 +126,13 @@ exports.userPasswordChange = async (req, res) => {
 
 exports.userForgotPasword = async (req, res) => {
     try {
-        let user = await User.findOne({ email: req.body.email, isDelete: false });
+        let user = await UserServices.findOneUser({
+            email: req.body.email,
+            isDelete: false
+        });
         if (!user) {
             return res.json({ message: 'User Not Found....' });
         }
-        // console.log(user);
-        
         let otp = otpGenerator.generate(4, { lowerCaseAlphabets: false, upperCaseAlphabets: false, specialChars: false });
         const mailOptions = {
             from: process.env.EMAIL_USER_NAME,

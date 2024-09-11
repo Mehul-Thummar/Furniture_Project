@@ -1,5 +1,7 @@
 const Order = require("../model/order.model");
 const Cart = require("../model/cart.model");
+const OrderServices = require("../services/order.service");
+
 
 exports.addNewOrder = async (req, res) => {
     try {
@@ -21,12 +23,12 @@ exports.addNewOrder = async (req, res) => {
         console.log(amount);
 
 
-        let order = await Order.create({
+        let order = await OrderServices.createOrder({
             user: req.user._id,
             items: orderItems,
             paidAmount: amount
         });
-        await Cart.updateMany({ user: req.user._id, isDelete: false }, { isDelete: true });
+        await OrderServices.updateManyCart({ user: req.user._id, isDelete: false }, { isDelete: true });
         res.json({ message: 'Order Placed', order });
     } catch (err) {
         console.log(err);
@@ -48,12 +50,15 @@ exports.getAllOrder = async (req, res) => {
 
 exports.deleteOrder = async (req, res) => {
     try {
-        let order = await Order.findById({ _id: req.query.orderId, isDelete: false });
+        let order = await OrderServices.findByIdOrder({
+            _id: req.query.orderId,
+            isDelete: false
+        });
         if (!order) {
             return res.status(404).json({ message: "Order Not Founded" });
         }
 
-        order = await Order.findByIdAndUpdate(order._id, { isDelete: true }, { new: true });
+        order = await OrderServices.findByIdAndUpdateOrder(order._id, { isDelete: true }, { new: true });
         res.status(200).json({ message: "Oreder Deleted SuccessFully", order });
     } catch (err) {
         console.log(err);
