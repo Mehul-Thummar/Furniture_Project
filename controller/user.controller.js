@@ -15,13 +15,17 @@ exports.userSighup = async (req, res) => {
         if (user) {
             return res.json({ message: 'User Already Existed....' });
         }
+        if (req.file) {
+            imagePath = req.file.path.replace(/\\/g, "/");
+        }
         if (req.body.password !== req.body.confirmPassword) {
             return res.json({ message: 'User Password And Confirm Password Are Not Match.' });
         }
         let hashPassword = await bcrypt.hash(req.body.password, 10);
         user = await UserServices.createUser({
             ...req.body,
-            password: hashPassword
+            password: hashPassword,
+            profileImage: imagePath,
         });
         res.status(201).json({ message: "SighUp SuccessFully Done.", user });
     } catch (err) {
