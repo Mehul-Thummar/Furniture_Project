@@ -78,12 +78,11 @@ exports.getAllUser = async (req, res) => {
 
 exports.userProfileUpdate = async (req, res) => {
     try {
+        console.log("Hello");
+        
         let user = req.user;
         user = await UserServices.findByIdAndUpdateUser(
-            user._id,
-            { $set: req.body },
-            // { profileImage: imagePath },
-            { new: true });
+            user._id, {...req.body});
         if (req.file) {
             user.profileImage = req.file.path.replace(/\\/g, "/");
             await user.save();

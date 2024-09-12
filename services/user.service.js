@@ -72,9 +72,9 @@ class UserServices {
     };
 
     
-    async findByIdAndUpdateUser(body) {
+    async findByIdAndUpdateUser(userId, body) {
         try {
-            return await User.findByIdAndUpdate(body);
+            return await User.findByIdAndUpdate(userId, body, {new: true});
         } catch (err) {
             console.log(err);
             return err;
