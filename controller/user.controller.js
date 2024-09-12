@@ -82,7 +82,12 @@ exports.userProfileUpdate = async (req, res) => {
         user = await UserServices.findByIdAndUpdateUser(
             user._id,
             { $set: req.body },
+            // { profileImage: imagePath },
             { new: true });
+        if (req.file) {
+            user.profileImage = req.file.path.replace(/\\/g, "/");
+            await user.save();
+        }
         res.status(202).json({ message: "User Profile Updated", user });
     }
     catch (err) {
