@@ -21,7 +21,7 @@ server.get("/", (req, res) => {
 });
 
 
-server.use("/", indexRoutes);
+server.use("/", indexRoutes)
 
 
 server.listen(8020, () => {
