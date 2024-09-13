@@ -4,6 +4,7 @@ const jwt = require("jsonwebtoken");
 const otpGenerator = require('otp-generator');
 const { otpMailSender } = require('../helpers/otpMailSender');
 const UserServices = require("../services/user.service");
+const { uploadCloudinary } = require("../helpers/cloudinary");
 
 
 exports.userSighup = async (req, res) => {
@@ -17,7 +18,9 @@ exports.userSighup = async (req, res) => {
         }
         if (req.file) {
             imagePath = req.file.path.replace(/\\/g, "/");
+            imagePath = await uploadCloudinary(imagePath);
         }
+
         if (req.body.password !== req.body.confirmPassword) {
             return res.json({ message: 'User Password And Confirm Password Are Not Match.' });
         }
@@ -25,7 +28,7 @@ exports.userSighup = async (req, res) => {
         user = await UserServices.createUser({
             ...req.body,
             password: hashPassword,
-            profileImage: imagePath,
+            profileImage: imagePath.url,
         });
         res.status(201).json({ message: "SighUp SuccessFully Done.", user });
     } catch (err) {
@@ -82,7 +85,9 @@ exports.userProfileUpdate = async (req, res) => {
         user = await UserServices.findByIdAndUpdateUser(
             user._id, { ...req.body });
         if (req.file) {
-            user.profileImage = req.file.path.replace(/\\/g, "/");
+            imagePath = req.file.path.replace(/\\/g, "/");
+            imagePath = await uploadCloudinary(imagePath);
+            user.profileImage = imagePath.url
             await user.save();
         }
         res.status(202).json({ message: "User Profile Updated", user });
