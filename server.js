@@ -20,7 +20,9 @@ server.get("/", (req, res) => {
     res.send("Welcome to Furniture App Server");
 });
 
+
 server.use("/", indexRoutes);
+
 
 server.listen(8020, () => {
 
