@@ -1,5 +1,7 @@
 const Product = require("../model/product.model");
 const ProductServices = require("../services/product.service");
+const { uploadCloudinary } = require("../helpers/cloudinary");
+
 
 exports.addNewProduct = async (req, res) => {
     try {
@@ -10,7 +12,14 @@ exports.addNewProduct = async (req, res) => {
         if (product) {
             return res.status(400).json({ message: 'Product Already Existed....' });
         }
-        product = await ProductServices.createProduct(req.body);
+        if (req.file) {
+            imagePath = req.file.path.replace(/\\/g, "/");
+            imagePath = await uploadCloudinary(imagePath);
+        }
+        product = await ProductServices.createProduct({
+            ...req.body,
+            productImage: imagePath.url,
+        });
         res.status(201).json({ message: "Product Add SuccessFully.", product });
     } catch (err) {
         console.log(err);
@@ -31,9 +40,15 @@ exports.getProduct = async (req, res) => {
 
 exports.updateProduct = async (req, res) => {
     try {
-        let product = await ProductServices.findByIdProduct(req.query.productId);
+        let product = await ProductServices.findOneAndUpdateProduct(req.query.productId);
         if (!product) {
             return res.status(404).json({ message: "Product Not Founded" });
+        }
+        if (req.file) {
+            imagePath = req.file.path.replace(/\\/g, "/");
+            imagePath = await uploadCloudinary(imagePath);
+            product.productImage = imagePath.url
+            await product.save();
         }
         product = await ProductServices.findOneAndUpdateProduct(
             {
