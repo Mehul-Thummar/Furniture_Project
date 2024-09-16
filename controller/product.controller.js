@@ -40,7 +40,7 @@ exports.getProduct = async (req, res) => {
 
 exports.updateProduct = async (req, res) => {
     try {
-        let product = await ProductServices.findOneAndUpdateProduct(req.query.productId);
+        let product = await ProductServices.findByIdProduct(req.body.productId);
         if (!product) {
             return res.status(404).json({ message: "Product Not Founded" });
         }
@@ -50,14 +50,7 @@ exports.updateProduct = async (req, res) => {
             product.productImage = imagePath.url
             await product.save();
         }
-        product = await ProductServices.findOneAndUpdateProduct(
-            {
-                _id: product._id
-            },
-            req.body,
-            {
-                new: true
-            });
+        product = await ProductServices.findOneAndUpdateProduct(product._id, req.body);
         res.status(202).json({ message: "Product Updated SuccessFully", product });
     } catch (err) {
         console.log(err);

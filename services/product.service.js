@@ -1,5 +1,6 @@
 const { default: mongoose } = require('mongoose');
 const Product = require('../model/product.model');
+const { query } = require('express');
 
 
 class ProductServices {
@@ -82,9 +83,15 @@ class ProductServices {
         }
     };
 
-    async findOneAndUpdateProduct(body) {
+    async findOneAndUpdateProduct(productId, body) {
         try {
-            return await Product.findOneAndUpdate(body);
+            return await Product.findOneAndUpdate({
+                _id: productId
+            },
+            body,
+            {
+                new: true
+            });
         } catch (err) {
             console.log(err);
             return err;
