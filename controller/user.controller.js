@@ -152,7 +152,7 @@ exports.userForgotPasword = async (req, res) => {
             text: `Your Forgot password otp is ${otp} valid only 5 minutes.`
         };
         await otpMailSender(mailOptions);
-        res.send(otp,' Otp Send SuccessFully To Your Email.');
+        res.send(' Otp Send SuccessFully To Your Email.');
     } catch (err) {
         console.log(err);
         res.status(500).json({ message: 'Internal Server Error' });
