@@ -22,7 +22,7 @@ userRoutes.put("/profileUpdate", verifyToken, upload.single('profileImage'), use
 userRoutes.delete("/delete", verifyToken, userDelete);
 userRoutes.put("/passwordChange", verifyToken, userPasswordChange);
 userRoutes.post("/forgotPassword", userForgotPasword);
-userRoutes.post("/resetPassword", userResetPasword);
+// userRoutes.post("/resetPassword", userResetPasword);
 
 
 module.exports = userRoutes;
