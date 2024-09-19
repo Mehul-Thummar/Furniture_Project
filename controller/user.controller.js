@@ -159,13 +159,13 @@ exports.userForgotPasword = async (req, res) => {
     }
 }
 
-exports.userResetPasword = async (req, res) => {
-    try {
+// exports.userResetPasword = async (req, res) => {
+//     try {
 
 
 
-    } catch (err) {
-        console.log(err);
-        res.status(500).json({ message: 'Internal Server Error' });
-    }
-}
+//     } catch (err) {
+//         console.log(err);
+//         res.status(500).json({ message: 'Internal Server Error' });
+//     }
+// }
