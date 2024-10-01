@@ -7,7 +7,7 @@ exports.addtoCart = async (req, res) => {
         let cart = await CartServices.findOneCart({
             user: req.user._id,
             productId: req.body.productId,
-            isDelete: false,
+            isDelete: false
         });
         if (cart) {
             cart.quantity += req.body.quantity;
